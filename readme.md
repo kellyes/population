@@ -1,1 +1,1 @@
-repr‚senter "la taille de la population par r‚gion sur une carte avec D3.js" 
+reprÃ©senter la taille de la population par rÃ©gion sur une carte avec D3.js" 
