@@ -120,7 +120,6 @@ var legendAxis = canvas.append("g")
     d3.select("#d" + e.CCA_1	)
         .attr("class", function(d) { return "department q" + quantile(+e.MASCULIN) + "-9"; })
         .on("mouseover", function(d) {
-		//d3.select(this).remove();
 		d3.select("h2").text(e.Wilaya);
 		d3.select(this).style("cursor", "pointer");
             div.transition()        
