@@ -9,8 +9,8 @@
 		 <script src="https://d3js.org/d3-scale.v2.min.js"></script>
 		 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-transform/1.0.4/d3-transform.js"></script>
 		 <script src="https://d3js.org/d3-axis.v1.min.js"></script>
-<script src="https://d3js.org/d3-geo.v1.min.js"></script>
-<script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
+		<script src="https://d3js.org/d3-geo.v1.min.js"></script>
+		<script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
 
 		<style type ="text/css">
 		
@@ -136,18 +136,19 @@ var legendAxis = canvas.append("g")
 		
 	
 	
-	csv.forEach(function(e,i) {
+csv.forEach(function(e,i) {
 	
-		d3.select("#d" + e.CCA_1) //select the elements created for the geographical elements by the id given (id of the city, same information given by the json file) 
-			.attr("class", function(d) { return "city q" + quantile(+e.TOTAL) + "-9"; })
+d3.select("#d" + e.CCA_1) //select the elements created for the geographical elements by the id given (id of the city, same information given by the json file) 
+		        .attr("class",
+		function(d) { return "city q" + quantile(+e.TOTAL) + "-9"; })
 			//event on the mouse over the city area 
-			.on("mouseover", 
-			function(d) {
+		        .on("mouseover", 
+		function(d) {
 				d3.select("h1").text("City: "+e.Wilaya); //display the name of the city on the h1 element
 				d3.select(this) //select the current element
-				.style("cursor", "pointer"); //changing the style of the cursor when its on the city area
+				 .style("cursor", "pointer"); //changing the style of the cursor when its on the city area
 				
-				//setting a transition
+			   //setting a transition
 			    div.transition()        
 				   .duration(200)      
 				   .style("opacity", 0.9);
@@ -161,7 +162,7 @@ var legendAxis = canvas.append("g")
         })
 		
 		     //event on mouse out
-			.on("mouseout", function(d) {
+			   .on("mouseout", function(d) {
              div.transition()
                 .duration(500)
                 .style("opacity", 0);
