@@ -3,25 +3,26 @@
     <head>
 		<meta charset="UTF-8">
 		
- <script src="https://d3js.org/d3.v4.js"></script>
- <script src="https://d3js.org/d3-array.v1.min.js"></script>
- <script src="https://d3js.org/d3-geo.v1.min.js"></script>
- <script src="https://d3js.org/d3-scale.v2.min.js"></script>
- <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-transform/1.0.4/d3-transform.js"></script>
-<script src="https://d3js.org/d3-axis.v1.min.js"></script>
-
+		 <script src="https://d3js.org/d3.v4.js"></script>
+		 <script src="https://d3js.org/d3-array.v1.min.js"></script>
+		 <script src="https://d3js.org/d3-geo.v1.min.js"></script>
+		 <script src="https://d3js.org/d3-scale.v2.min.js"></script>
+		 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-transform/1.0.4/d3-transform.js"></script>
+		 <script src="https://d3js.org/d3-axis.v1.min.js"></script>
+<script src="https://d3js.org/d3-geo.v1.min.js"></script>
+<script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
 
 		<style type ="text/css">
 		
 		
 	
 		
-		/* On mouse hover, coloriage des communes  */
+/* On mouse hover, coloriage des communes  */
 		
-.Blues .q0-9 {fill:rgb(34, 120, 15)}
-.Blues .q1-9{fill:rgb(1, 215, 88)}
-.Blues .q2-9{fill:rgb(176, 242, 182)}
-.Blues .q3-9{fill:rgb(37, 253, 233)}
+.Greens .q0-9 {fill:rgb(176, 242, 182)}
+.Greens .q1-9{fill:rgb(152,251,152)}
+.Greens .q2-9{fill:rgb(1, 215, 88)}
+.Greens .q3-9{fill: rgb(34, 120, 15)}
 
 path:hover {
 	
@@ -30,7 +31,7 @@ path:hover {
 }
 
 
-		div.tooltip {
+div.tooltip {
     position: absolute;
     text-align: center;
     color: white;
@@ -47,9 +48,11 @@ path:hover {
 .rectangle {
 	fill: steelblue;
 }
+
 .rectangle:hover {
 	fill: orange;
 }
+
 .axis {
   font: 10px sans-serif;
 }
@@ -60,100 +63,117 @@ path:hover {
   stroke: #000;
   shape-rendering: crispEdges;
 }
+
 		</style>
     </head>
     <body>
-	<!-- <div id="drop" align=center></div> -->
-	<!-- <h1>Plateforme de visualisation</h1> -->
-	<h2></h2>
-       <script>
-	   
-	   
-	 
-	//methode 1	
-var canvas = d3.select("body").append("svg")
-	 	 .attr("width", 1000)
-	 	 .attr("height", 1000)
-		 .attr ("class","Blues")
 
+	<h1></h1>
+       <script>
+//set up width, height and padding (space used between max height, max width and the svg	   
+var w = 1000 ;
+var h = 1000 ;	   
+var padding = 30 ;
+
+//creating the svg element in wich we will display the visualisation 
+var canvas = d3.select("body").append("svg")
+	 	 .attr("width", w)
+	 	 .attr("height", h)
+		 .attr ("class","Greens")
+
+//creating a div element wich contains the tooltip		 
 var div = d3.select("body").append("div")   
 		.attr("class", "tooltip")               
 		.style("opacity", 0);
 				
+fonction = function(data) {
 
-d3.json("dz1.geojson", function(data) {
+//creating the DOM elements g that will contain the features of the json file (each feature is an element containing information about a geographical region
 var group = canvas.selectAll("g")
 		 .data(data.features)
 		 .enter()
 		 .append("g")	
-	     .attr('id', function(d) {return "d" + d.properties.CCA_1;})	
+	     .attr("id", function(d) {return "d" + d.properties.CCA_1;})	
+		 
 
- d3.csv("DZmap.csv", function(csv) {
+// opening the csv file that contains data about population
+d3.csv("DZmap.csv",
+function(csv) {
+
+//setting the scale for the population data
 var quantile = d3.scaleQuantile()
-        .domain([0, d3.max(csv, function(e) { return +e.MASCULIN; })])
+        .domain([0, d3.max(csv, function(e) { return +e.TOTAL; })])
         .range(d3.range(5));
+		
 var elements = Object.keys(csv[0]);
-	
-var legend = canvas.append('g')
-		.attr('transform', 'translate(800, 250)')
-		.attr('id', 'legend');
+console.log(elements);
+
+//adding a legend to the visualisation in an 'g' element in the svg	
+var legend = canvas.append("g")
+		.attr("transform", "translate(800, 250)")
+		.attr("id", "legend");
 				
-				
-		legend.selectAll('.colorbar')
+//créating the rectangles  that represent the scale for population by their color (shades of Blue)				
+	legend.selectAll(".colorbar")
         .data(d3.range(5))
-       .enter().append('svg:rect')
-        .attr('y', function(d) { return d * 20 + 'px'; })
-        .attr('height', '20px')
-        .attr('width', '20px')
-        .attr('x', '0px')
+        .enter().append("svg:rect")
+        .attr("y", function(d) { return d * 20 + "px"; })
+        .attr("height", "20px")
+        .attr("width", "20px")
+        .attr("x", "0px")
         .attr("class", function(d) { return "q" + d + "-9"; });
-    	
+ 
+//setting the scale for the legend (linear scale) 
 var legendScale = d3.scaleLinear()
-		.domain([0, d3.max(csv, function(e) { return +e.MASCULIN; })])
+		.domain([0, d3.max(csv, function(e) { return +e.TOTAL; })])
 		.range([0, 5 * 20]);
-	
+
+//adding an axis to the svg 		
 var legendAxis = canvas.append("g")
-		.attr('transform', 'translate(828, 250)')
+		.attr("transform", "translate(828, 250)")
 		.call(d3.axisRight(legendScale).ticks(5));
 		
+		
+	
+	
 	csv.forEach(function(e,i) {
-    d3.select("#d" + e.CCA_1	)
-        .attr("class", function(d) { return "department q" + quantile(+e.MASCULIN) + "-9"; })
-        .on("mouseover", function(d) {
-		d3.select("h2").text(e.Wilaya);
-		d3.select(this).style("cursor", "pointer");
-            div.transition()        
-                .duration(200)      
-                .style("opacity", .9);
-            div.html("<b>Région : </b>Algérie<br>"
-                   + "<b> Ville : </b>" +e.Wilaya + "<br>"
-                   + "<b>Population : </b>" + e.TOTAL + "<br>")
-				  
-                .style("left", (d3.event.pageX + 30) + "px")     
+	
+		d3.select("#d" + e.CCA_1) //select the elements created for the geographical elements by the id given (id of the city, same information given by the json file) 
+			.attr("class", function(d) { return "city q" + quantile(+e.TOTAL) + "-9"; })
+			//event on the mouse over the city area 
+			.on("mouseover", 
+			function(d) {
+				d3.select("h1").text("City: "+e.Wilaya); //display the name of the city on the h1 element
+				d3.select(this) //select the current element
+				.style("cursor", "pointer"); //changing the style of the cursor when its on the city area
+				
+				//setting a transition
+			    div.transition()        
+				   .duration(200)      
+				   .style("opacity", 0.9);
+				//display the information contained in the csv file (Name of the city and the population)   
+                div.html("<b>Country : </b>Algérie<br>"
+                   + "<b> City : </b>" +e.Wilaya + "<br>"
+                   + "<b>Population : </b>" + e.TOTAL + "<br>")		
+				 //setting  the tooltip  
+				.style("left", (d3.event.pageX + 30) + "px")     
                 .style("top", (d3.event.pageY - 30) + "px");
         })
-        .on("mouseout", function(d) {
-            div.transition()
+		
+		     //event on mouse out
+			.on("mouseout", function(d) {
+             div.transition()
                 .duration(500)
                 .style("opacity", 0);
             div.html("")
                 .style("left", "0px")
                 .style("top", "0px");
-        });
-		
-		<!-- d3.select(this).on("click",fmpurl); -->
-
-  <!-- function fmpurl() { -->
-		<!-- var url = "file:///C:/xampp/htdocs/tut%20-%20Copie/histograme.html" ; -->
-		<!-- window.location = url; -->
-<!-- } -->
+        });	
 });
 
-
 });	
-					   
-///////////////////////////////////////////////////////////////
 
+//selecting the appropriate projection for the map  ===> https://github.com/d3/d3-geo-projection   
 var projection=d3.geoTransverseMercator()
 		.center ([3.7973, 36.9801])
 		.scale(2000)
@@ -161,30 +181,16 @@ var projection=d3.geoTransverseMercator()
 					
 
 var path=d3.geoPath().projection(projection);
+//creating path elements that represent the city area
 var areas = group.append("path")
 		.attr("d",path)
 		.attr ("class","area")
 		.attr ("stroke","white")
-		.attr ("stroke-width",.1)
-		<!-- .attr("fill","orange"); -->
-		d3.select("#data").on("change", function() {
-    selectedData = this.value;
-         
-    quantile = d3.scale.scaleQuantile
-        .domain([0, d3.max(csv, function(e) { return +e[selectedData]; })])
-        .range(d3.range(5));
-         
-    legendScale.domain([0, d3.max(csv, function(e) { return +e[selectedData]; })]);
-    legendAxis.call(d3.axisRight(legendScale).ticks(5));
-         
-    csv.forEach(function(e,i) {
-        d3.select("#d" + e.CODE_DEPT)
-            .attr("class", function(d) { return "department q" + quantile(+e[selectedData]) + "-9"; });
-    });
-});
+		.attr ("stroke-width",.3)
 		
-
-				});
+				};
+				
+d3.json("dz1.geojson", fonction);
 
 	</script>
     </body>
